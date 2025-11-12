@@ -1,0 +1,152 @@
+using System;
+using System.Diagnostics;
+
+class Program
+{
+    const double WATER_RATE = 30.0;
+    const double GAS_RATE = 30.0;
+    const double ELECTRICITY_RATE = 3.0;
+
+    const double PENSIONEER = 0.7;
+    const double LARGE_FAMILY = 0.8;
+    const double DISABLED = 0.5;
+
+    const double PENALTY1 = 1.05;
+    const double PENALTY3 = 1.1;
+
+
+
+
+    static void Main(string[] args)
+    {
+        bool exit = false;
+
+        do
+        {
+            try
+            {
+                Console.WriteLine("=== Калькулятор ЖКХ ===");
+                Console.WriteLine("1. Рассичтать платеж");
+                Console.WriteLine("2.Выход");
+                Console.Write("Выберите дейвстивеи: ");
+
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Calculate();
+                        break;
+                    case "2":
+                        exit = true;
+                        break;
+                    default:
+                        Console.WriteLine("Неверный выбор");
+                        Console.ReadKey();
+                        break;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Произошла ошибка: " + ex.Message);
+                Console.ReadKey();
+            }
+        }
+        while (!exit);
+        {
+            Console.WriteLine("Спасибо за использование калькулятора!");
+            Console.WriteLine("Не забывайте оплачиавть коммуналку вовремя!!!");
+        }
+    }
+
+    static void Calculate()
+    {
+        bool cucle = false;
+        while (!cucle)
+        {
+
+            Console.Clear();
+            Console.WriteLine("=== Ввод данных для расчета ===");
+
+            double water = GetInput("Введите расход воды (м³): ", 0, 1000) * WATER_RATE;
+            double gas = GetInput("Введите расход газа (м³): ", 0, 1000) * GAS_RATE;
+            double electro = GetInput("Введите расход электроэнергии (кВт·ч): ", 0, 5000) * ELECTRICITY_RATE;
+            double result = 0;
+
+            Console.WriteLine();
+            Console.WriteLine("=== Льготы есть? ===");
+            Console.WriteLine("0 - нет льгот");
+            Console.WriteLine("1 - Я старый");
+            Console.WriteLine("2 - Я многодетная мамаша");
+            Console.WriteLine("3 - Я инвалид");
+            double choice = GetInput("Выбери подходящую: ", 0, 3);
+            if (choice == 0.0)
+            {
+                result = water + gas + electro;
+            }
+            else if (choice == 1.0)
+            {
+                result = water + electro * PENSIONEER + gas;
+            }
+            else if (choice == 2.0)
+            {
+                result = gas * LARGE_FAMILY + electro + water * LARGE_FAMILY;
+            }
+            else if (choice == 3.0)
+            {
+                result = (gas + electro + water) * DISABLED;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("=== Штрафы? ===");
+            Console.WriteLine("0 - я добропорядочный платильщик");
+            Console.WriteLine("1 - просрочил на месяц");
+            Console.WriteLine("2 - я вообще не плачу");
+            double choicePinalty = GetInput("Выбери подходящую: ", 0, 2);
+
+            if (choicePinalty == 1.0)
+            {
+                result *= PENALTY1;
+            }
+            else if (choicePinalty == 2.0)
+            {
+                result *= PENALTY3;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("=== Результат ===");
+            Console.WriteLine("Вода: " + water);
+            Console.WriteLine("Газ: " + gas);
+            Console.WriteLine("Электричество: " + electro);
+            Console.WriteLine("Общая сумма:" + result);
+
+            Console.WriteLine();
+            Console.WriteLine("1. Новый расчет");
+            Console.WriteLine("2. Выход");
+
+            double choiceCucle = GetInput("Выбор: ", 1, 2);
+
+            if (choiceCucle == 2.0)
+            {
+                cucle = true;
+            }
+        }
+
+
+
+    }
+
+
+    static double GetInput(string prompt, double min, double max)
+    {
+        double value;
+        while (true)
+        {
+            Console.Write(prompt);
+            if (double.TryParse(Console.ReadLine(), out value) && value >= min && value <= max)
+                return value;
+            Console.WriteLine($"Ошибка! Введите число от {min} до {max}");
+        }
+    }
+}
